@@ -80,48 +80,49 @@ class IOStatWorker(Worker):
     def send(self, data):
         for row in data:
             dev = row[0][1]
-            prefix = '%s.%s.' % (self.name, dev)
+            #prefix = '%s.%s.' % (self.name, dev)
+            prefix = '%s.' % (self.name)
             for k, v in row[1:]:
                 if self.send_integers is True:
                     v = int(float(v))
-                key = prefix + self.clean_key(k)
+                key = prefix + self.clean_key(k) + '#dev=' + dev
                 log.debug('%s: %s' % (key, v))
                 self.statsd.gauge(key, v)
 
 
-@workers.append
-class MPStatWorker(Worker):
-    name = 'mpstat'
-    parser = parser.MPStatParser
-
-    def get_cmd_argv(self):
-        return ['mpstat', '-P', 'ALL', str(self.interval)]
-
-    def send(self, data):
-        for row in data:
-            cpu = row[0][1]
-            prefix = '%s.%s.' % (self.name, cpu)
-            for k, v in row[1:]:
-                if self.send_integers is True:
-                    v = int(float(v))
-                key = prefix + self.clean_key(k)
-                log.debug('%s: %s' % (key, v))
-                self.statsd.gauge(key, v)
-
-
-@workers.append
-class VMStatWorker(Worker):
-    name = 'vmstat'
-    parser = parser.VMStatParser
-
-    def get_cmd_argv(self):
-        return ['vmstat', str(self.interval)]
-
-    def send(self, data):
-        prefix = '%s.' % self.name
-        for k, v in data:
-            if self.send_integers is True:
-                v = int(float(v))
-            key = prefix + self.clean_key(k)
-            log.debug('%s: %s' % (key, v))
-            self.statsd.gauge(key, v)
+#@workers.append
+#class MPStatWorker(Worker):
+#    name = 'mpstat'
+#    parser = parser.MPStatParser
+#
+#    def get_cmd_argv(self):
+#        return ['mpstat', '-P', 'ALL', str(self.interval)]
+#
+#    def send(self, data):
+#        for row in data:
+#            cpu = row[0][1]
+#            prefix = '%s.%s.' % (self.name, cpu)
+#            for k, v in row[1:]:
+#                if self.send_integers is True:
+#                    v = int(float(v))
+#                key = prefix + self.clean_key(k)
+#                log.debug('%s: %s' % (key, v))
+#                self.statsd.gauge(key, v)
+#
+#
+#@workers.append
+#class VMStatWorker(Worker):
+#    name = 'vmstat'
+#    parser = parser.VMStatParser
+#
+#    def get_cmd_argv(self):
+#        return ['vmstat', str(self.interval)]
+#
+#    def send(self, data):
+#        prefix = '%s.' % self.name
+#        for k, v in data:
+#            if self.send_integers is True:
+#                v = int(float(v))
+#            key = prefix + self.clean_key(k)
+#            log.debug('%s: %s' % (key, v))
+#            self.statsd.gauge(key, v)
